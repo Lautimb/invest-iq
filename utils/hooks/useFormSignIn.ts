@@ -1,39 +1,22 @@
 import { useState } from "react";
-import { validateEmail, validatePassword } from "../validationsForm";
-
-interface ErrorsSignIn {
-  email: string | Promise<string | null>;
-  password: string;
-}
 
 const useFormSignIn = () => {
-  const [errors, setErrors] = useState<ErrorsSignIn>({
+  const [values, setValues] = useState({
     email: "",
     password: "",
   });
 
-  const validateFields = (email?: string, password?: string): boolean => {
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
-
-    const hasErrors = !!(emailError || passwordError);
-
-    setErrors({
-      email: emailError || "",
-      password: passwordError || "",
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
     });
-
-    return !hasErrors;
   };
 
-  const clearError = (fieldName: string) => {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [fieldName]: "",
-    }));
+  return {
+    values,
+    handleChange,
   };
-
-  return { errors, validateFields, clearError };
 };
 
 export default useFormSignIn;

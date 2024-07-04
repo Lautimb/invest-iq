@@ -1,33 +1,38 @@
 "use client";
+import React, { useState } from "react";
 import useFormValidation from "../../utils/hooks/useFormSignUp";
 import { FormEvent } from "react";
 import getFormData from "@/utils/getFormData";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
-import { registerUser } from "@/api/authSignUpPassword";
+import { registerUser } from "@/app/lib/authSignUpPassword";
 
 export function FormSignUp() {
+  const [loading, setLoading] = useState<boolean>(false);
   const { errors, validateFields, clearError } = useFormValidation();
 
-  const handleRegister = (e: FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const { name, lastName, email, password, confirmPassword } = getFormData(
       e.currentTarget
     );
-    const isValid = validateFields(
+    const isValid = await validateFields(
       name,
       lastName,
       email,
       password,
       confirmPassword
     );
-
+    setLoading(false);
     if (!isValid) return;
 
     try {
       registerUser(name, lastName, email, password);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error("Error registering user:", error);
     }
   };
@@ -94,7 +99,9 @@ export function FormSignUp() {
           errorMessage={errors?.confirmPassword}
         />
         <Divider />
-        <Button type="submit">Registrarse</Button>
+        <Button type="submit" isLoading={loading}>
+          Registrarse
+        </Button>
       </form>
     </div>
   );

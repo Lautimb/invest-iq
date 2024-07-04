@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/firebase/firebaseConfig";
 import { collection, query, getDocs, where } from "firebase/firestore";
 

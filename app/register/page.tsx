@@ -1,7 +1,7 @@
 import { FormSignUp } from "@/ui/components/FormSignUp";
 import Header from "@/ui/components/Header";
 
-export default function Login() {
+export default function Register() {
   return (
     <>
       <Header />

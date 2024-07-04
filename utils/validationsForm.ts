@@ -1,5 +1,5 @@
 // validations.ts
-import { checkIfEmailExists } from "@/api/get";
+import { checkIfEmailExists } from "@/app/lib/get";
 
 export const validateName = (name?: string): string | null => {
   if (!name) {
@@ -21,7 +21,10 @@ export const validateLastName = (lastName?: string): string | null => {
   return null;
 };
 
-export const validateEmail = async (email?: string): Promise<string | null> => {
+export const validateEmailSignUp = async (
+  email?: string,
+  checkEmail: boolean = false
+): Promise<string | null> => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email) {
     return "El email es requerido";
@@ -29,6 +32,8 @@ export const validateEmail = async (email?: string): Promise<string | null> => {
   if (!emailRegex.test(email)) {
     return "El formato del email es inválido";
   }
+  if (!checkEmail) return null;
+
   const existEmail = await checkIfEmailExists(email);
   if (existEmail) {
     return "El email ya está registrado";

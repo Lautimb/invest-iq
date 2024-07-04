@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   validateName,
   validateLastName,
-  validateEmail,
+  validateEmailSignUp,
   validatePassword,
   validateConfirmPassword,
 } from "../validationsForm";
@@ -24,16 +24,16 @@ const useFormSignUp = () => {
     confirmPassword: "",
   });
 
-  const validateFields = (
+  const validateFields = async (
     name?: string,
     lastName?: string,
     email?: string,
     password?: string,
     confirmPassword?: string
-  ): boolean => {
+  ): Promise<boolean> => {
     const nameError = validateName(name);
     const lastNameError = validateLastName(lastName);
-    const emailError = validateEmail(email);
+    const emailError = await validateEmailSignUp(email);
     const passwordError = validatePassword(password);
     const confirmPasswordError = validateConfirmPassword(
       password,

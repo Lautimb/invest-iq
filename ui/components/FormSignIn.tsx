@@ -1,19 +1,34 @@
 "use client";
-import { FormEvent } from "react";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import getFormData from "@/utils/getFormData";
+import { Button } from "@nextui-org/react";
 import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
 import Link from "next/link";
-import useFormSignUp from "@/utils/hooks/useFormSignIn";
+import { login } from "@/app/lib/actions";
 
 export function FormSignIn() {
-  const { errors, validateFields, clearError } = useFormSignUp();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<
+    Promise<string | undefined> | string
+  >("");
+  const router = useRouter();
 
-  const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const { email, password } = getFormData(e.currentTarget);
-    const isValid = validateFields(email, password);
-    if (!isValid) return;
+
+    const responseAuth = await login({ email, password });
+    if (responseAuth.status === "success") {
+      setLoading(false);
+      router.push("/dashboard");
+    }
+
+    if (responseAuth.status === "error") {
+      setErrorMessage(responseAuth.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,21 +40,24 @@ export function FormSignIn() {
           size="sm"
           isRequired
           name="email"
-          onClick={() => clearError("email")}
-          isInvalid={!!errors.email}
-          errorMessage={errors?.email}
+          onClick={() => setErrorMessage("")}
+          isClearable
+          isInvalid={!!errorMessage}
+          errorMessage={errorMessage}
         />
         <Input
           type="password"
           label="Contraseña"
           size="sm"
           isRequired
+          isClearable
+          onClick={() => setErrorMessage("")}
           name="password"
-          onClick={() => clearError("password")}
-          isInvalid={!!errors.password}
-          errorMessage={errors?.password}
+          isInvalid={!!errorMessage}
         />
-        <Button type="submit">Ingresar</Button>
+        <Button type="submit" isLoading={loading}>
+          Ingresar
+        </Button>
         <p>
           Si no tenes cuenta{" "}
           <span className="text-blue-500">
